@@ -56,7 +56,7 @@ Follow these stages. Move forward when you can demonstrate the result of the cur
     
     Create a `readings` table with `id`, `device_id`, `timestamp`, and `water_level_m`. Write `save_reading()` and `get_recent_readings()` functions. Use SQL placeholders when inserting values.
     
-    Learn: database connections, `CREATE TABLE`, `INSERT`, `SELECT`, and committing changes. Start directly with Python’s built-in `sqlite3`. `db_path = Path(__file__).resolve().parent /"database.db"`--> fetch the path for the database.db inside the folder
+    Learn: database connections, `CREATE TABLE`, `INSERT`, `SELECT`, and committing changes. Start directly with Python’s built-in `sqlite3`. `db_path = Path(__file__).resolve().parent /"database" /"database.db"`--> fetch the path for the database.db inside the folder
     
     **Finished when:** you can close the program, reopen it, and retrieve readings from the previous run.
         
@@ -92,6 +92,8 @@ def hello_world():
 ```
 	handler: handling a request. 处理函数 
 2. **Connect your device program to your backend.**
+    guide: `file:///C:/Users/Howard/Documents/Codex/2026-11-16/2-mattpocock-skills-teach-c-users/outputs/Start-here.html`
+    
     
     Use `requests.post()` to send the dictionary produced by your device program. Set a timeout, inspect the response, and handle connection errors with `try/except`.
     
