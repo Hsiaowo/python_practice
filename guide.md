@@ -52,7 +52,7 @@ Follow these stages. Move forward when you can demonstrate the result of the cur
 		    - ==create a timestamp==: `from datetime import datetime`
 			    -  `datetime.now()`returns the current time
     >
-1. **Save those readings to SQLite.**
+2. **Save those readings to SQLite.**
     
     Create a `readings` table with `id`, `device_id`, `timestamp`, and `water_level_m`. Write `save_reading()` and `get_recent_readings()` functions. Use SQL placeholders when inserting values.
     
@@ -76,7 +76,7 @@ cur.execute("INSERT INTO movie VALUES(?, ?, ?)", data ) #where data is a tuple v
 2. **Build a tiny backend on your laptop.**
     
     Create `server.py` using Flask. Start with `GET /health`, returning `{"status": "ok"}`. Then add `POST /readings` to receive a reading and store it in a **separate backend database**. Finally, add `GET /readings` to return the latest records.
-    
+    `run: python -m flask --app server run --host=0.0.0.0     `
     Learn: URLs, HTTP methods, JSON, request bodies, response codes, and basic validation. Reject a request if its required measurement is missing or is not a number.
     
     **Finished when:** a manually submitted reading appears when you open `GET /readings` in your browser.
