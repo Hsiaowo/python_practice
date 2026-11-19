@@ -31,20 +31,26 @@ def read_reg(bus, address, reg, length, retries=5):
             return bus.read_i2c_block_data(address, reg, length) #
         except OSError as e:
             last = e
+        #fall back method, if the read_i2c_block_data works, then no need to execute the following:
         try:
             #first write to the reg of device address, then read from that reg
             bus.i2c_rdwr(i2c_msg.write(address, [reg]))
             time.sleep(0.01)
-            msg = bus.i2c_rdwr(i2c_msg.read(address,[reg]))
+            msg = i2c_msg.read(address,length)
+            bus.i2c_rdwr(msg) #rdwr(read or write) function writes value to Object msg
             return list(msg)
         except OSError as e:
             last = e
         time.sleep(0.05)
     raise last
 
+def read_pm(bus, address, retries=5):
+    """a raw value with bit15 set (0x8001) is invalid, """
+    out = {}
+
 def main():
     bus = SMBus(BUS) #SMBus()opens a specified i2c bus, and create an object for communication 
-    version = read_reg(bus, 0x19, REG_VERSION, 1)[0]
+    version = read_reg(bus, 0x19, REG_VERSION, 1)[0] #one length means 1 byte--> 8 bits
     print(f"the version for the sensor is:{version}")
 
 if __name__ == "__main__":
