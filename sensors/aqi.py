@@ -79,7 +79,44 @@ def category(v):
     if v <= 300 : return "very unhealthy"
     return "hazardous"
 
-
+class WindowsMean:
+    '''the sensor can mean over the last window_s seconds, and then stored as ~1440 bucket averages. 
+    , it can continuously calculate the average pm2.5 concentration over the past 24 hours without storing
+    every individual sensor reading'''
+    def __init__(self, window_s):
+        if not math.isfinite(window_s) or window_s <= 0:
+            raise ValueError("the average window time must be finite and larger than 0")
+        self.window_s = window_s
+        self.bucket_s = max(1.0, window_s / 1440)
+        self.buckets = deque() #python library for double ended queue, enable us to perform popleft(), appendleft(), pop(), append() to insert values
+        self.cur_t, self.cur_sum, self.cur_n = None, 0, 0 #cur_t: current timestamp; cur_sum: current sum of sensor data; cur_n: current number of data entries
+        self.started = time.time()
+        
+        def add(self, value, now=None):
+            now = time.time() if now is None else now
+            if self.cur_t is None:
+                self.cur_t = now
+            if now - self.cur_t >= self.bucket_s: # if there is more time period have gone than bucket_s 
+                self.buckets.append((self.cur_t, self.cur_sum/self.cur_n))# append the timestamp, current average reading to the end of the queue "bucket"
+                self.cur_t, self.cur_sum, self.cur_n = None, 0, 0 # after append the bucket, we need a new batch of sensor data coming in and we need to get rid of the old data. 
+            self.cur_sum += value
+            self.cur_n += 1
+            while self.buckets and now - self.buckets[0][0] > self.window_s: #self.buckets checks whether the deque is empty
+                #buckets[0][0] access the first tuple's first element in buckets, which is the initial timestamp
+                #remove the expired bucket
+                self.buckets.popleft() # popleft() removes the expired bucket.
+            
+            def mean(self):
+                vals = [m for _, m in self.buckets] # _,m : timestamp, current average
+                if self.cur_n:
+                    vals.append(self.cur_sum / self.cur_n)
+                return sum(vals) / len(vals) if vals else None
+                
+        
+            def coverage(self, now=None): # this function checks the percentage of time frame that we have been averaging
+                now = time.time()if now is None else now
+                return min(1.0, (now - self.started) / self.window_s)
+                
 
 
 
@@ -91,5 +128,6 @@ def main():
     print(f" the raw pm value is { raw_pm_value}")
     pm_index_25 = sub_index(raw_pm_value["pm25"], PM25_KNOTS)
     print(f" the pm25 index is {pm_index_25}, the category of the quality is: {category(pm_index_25)}")
+    windowmean_testing = WindowsMean(2)
 if __name__ == "__main__":
     main()
